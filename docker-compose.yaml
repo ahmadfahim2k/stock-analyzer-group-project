@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: backend-dev
+    container_name: stock-analyzer-backend
     ports:
       - "8000:8000"
     volumes:
@@ -13,15 +13,18 @@ services:
       - ./backend/uv.lock:/app/uv.lock
       - ./backend/data:/app/data
       - ./backend/processed_data:/app/processed_data
+    env_file:
+      - ./backend/app/.env
     environment:
       - UVicorn_ENV=development
+      - CORS_ORIGINS=http://localhost:3000
     command: ["uv", "run", "dev"]
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: frontend-dev
+    container_name: stock-analyzer-frontend
     ports:
       - "3000:3000"
     volumes:
@@ -29,7 +32,7 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://backend:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
       - backend
     command: ["npm", "run", "dev"]
